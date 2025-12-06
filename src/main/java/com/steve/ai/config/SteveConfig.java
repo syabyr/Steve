@@ -6,6 +6,7 @@ public class SteveConfig {
     public static final ForgeConfigSpec SPEC;
     public static final ForgeConfigSpec.ConfigValue<String> AI_PROVIDER;
     public static final ForgeConfigSpec.ConfigValue<String> OPENAI_API_KEY;
+    public static final ForgeConfigSpec.ConfigValue<String> OPENAI_BASE_URL;
     public static final ForgeConfigSpec.ConfigValue<String> OPENAI_MODEL;
     public static final ForgeConfigSpec.IntValue MAX_TOKENS;
     public static final ForgeConfigSpec.DoubleValue TEMPERATURE;
@@ -44,6 +45,10 @@ public class SteveConfig {
         OPENAI_API_KEY = builder
             .comment("Your OpenAI API key (required)")
             .define("apiKey", "");
+        
+        OPENAI_BASE_URL = builder
+            .comment("OpenAI API base URL (default: https://api.openai.com/v1, Agent Maestro: http://localhost:23333/api/openai)")
+            .define("baseUrl", "https://api.openai.com/v1");
         
         OPENAI_MODEL = builder
             .comment("OpenAI model to use (gpt-4, gpt-4-turbo-preview, gpt-3.5-turbo)")

@@ -1,0 +1,33 @@
+# Steve AI Configuration for Agent Maestro
+# Agent Maestro provides OpenAI-compatible API endpoints for VS Code language models
+# Documentation: https://marketplace.visualstudio.com/items?itemName=Joouis.agent-maestro
+
+[ai]
+    # Set to 'openai' to use Agent Maestro's OpenAI-compatible endpoint
+    provider = "openai"
+
+[openai]
+    # For Agent Maestro, you can use any value as API key (or leave empty)
+    # Agent Maestro doesn't require authentication by default
+    apiKey = "agent-maestro"
+    
+    # Agent Maestro OpenAI-compatible endpoint
+    # Default: http://localhost:23333/api/openai
+    # The full URL will be: http://localhost:23333/api/openai/chat/completions
+    baseUrl = "http://localhost:23333/api/openai"
+    
+    # Model name from VS Code's available language models
+    # To see available models, visit: http://localhost:23333/api/v1/lm/chatModels
+    # Common examples:
+    # - "gpt-4o" (GitHub Copilot)
+    # - "claude-3.5-sonnet" (if you have Claude access)
+    # - "gpt-4-turbo-preview"
+    model = "gpt-4o"
+    
+    maxTokens = 8000
+    temperature = 0.7
+
+[behavior]
+    actionTickDelay = 20
+    enableChatResponses = true
+    maxActiveSteves = 10
