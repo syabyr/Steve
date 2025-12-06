@@ -13,14 +13,29 @@ public class SteveConfig {
     public static final ForgeConfigSpec.BooleanValue ENABLE_CHAT_RESPONSES;
     public static final ForgeConfigSpec.IntValue MAX_ACTIVE_STEVES;
 
+    public static final ForgeConfigSpec.ConfigValue<String> OLLAMA_BASE_URL;
+    public static final ForgeConfigSpec.ConfigValue<String> OLLAMA_MODEL;
+
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
         builder.comment("AI API Configuration").push("ai");
         
         AI_PROVIDER = builder
-            .comment("AI provider to use: 'groq' (FASTEST, FREE), 'openai', or 'gemini'")
-            .define("provider", "groq");
+            .comment("AI provider to use: 'ollama' (LOCAL), 'openai', or 'gemini'")
+            .define("provider", "ollama");
+        
+        builder.pop();
+
+        builder.comment("Ollama Configuration (Local AI)").push("ollama");
+        
+        OLLAMA_BASE_URL = builder
+            .comment("Ollama server URL (default: http://localhost:11434)")
+            .define("baseUrl", "http://localhost:11434");
+        
+        OLLAMA_MODEL = builder
+            .comment("Ollama model to use (e.g., llama3.2, mistral, qwen2.5, deepseek-r1)")
+            .define("model", "llama3.2");
         
         builder.pop();
 

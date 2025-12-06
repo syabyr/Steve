@@ -54,28 +54,73 @@ public class ResponseParser {
 
     private static String extractJSON(String response) {
         String cleaned = response.trim();
-        
+
+        // If there's plain text和多个 JSON 块,优先截取包含 "\"tasks\"" 的最后一个 {...}
+        int tasksIndex = cleaned.lastIndexOf("\"tasks\"");
+        if (tasksIndex >= 0) {
+            int openFromTasks = cleaned.lastIndexOf('{', tasksIndex);
+            int globalLastBrace = cleaned.lastIndexOf('}');
+
+            if (openFromTasks >= 0 && globalLastBrace > openFromTasks) {
+                cleaned = cleaned.substring(openFromTasks, globalLastBrace + 1);
+            }
+        } else {
+            // Fallback: take from first '{' to last '}'
+            int firstBrace = cleaned.indexOf('{');
+            int lastBrace = cleaned.lastIndexOf('}');
+            if (firstBrace >= 0 && lastBrace > firstBrace) {
+                cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+            }
+        }
+
+        cleaned = cleaned.trim();
+
         if (cleaned.startsWith("```json")) {
             cleaned = cleaned.substring(7);
-        } else if (cleaned.startsWith("```")) {
+        } else if (cleaned.startsWith("```") ) {
             cleaned = cleaned.substring(3);
         }
-        
-        if (cleaned.endsWith("```")) {
+
+        if (cleaned.endsWith("```") ) {
             cleaned = cleaned.substring(0, cleaned.length() - 3);
         }
-        
+
         cleaned = cleaned.trim();
-        
-        // Fix common JSON formatting issues
+
+        // Remove JavaScript-style comments the model might insert inside JSON
+        // Line comments starting with //
+        cleaned = cleaned.replaceAll("//.*?(?=\\n|$)", "");
+        // Block comments like /* ... */
+        cleaned = cleaned.replaceAll("/\\*.*?\\*/", "");
+
+        // Fix common JSON formatting issues (collapse newlines)
         cleaned = cleaned.replaceAll("\\n\\s*", " ");
-        
-        // Fix missing commas between array/object elements (common AI mistake)
-        cleaned = cleaned.replaceAll("}\\s+\\{", "},{");
-        cleaned = cleaned.replaceAll("}\\s+\\[", "},[");
-        cleaned = cleaned.replaceAll("]\\s+\\{", "],{");
-        cleaned = cleaned.replaceAll("]\\s+\\[", "],[");
-        
+
+        // 简单括号平衡修复: 保证外层 { 和 } 数量一致
+        int openCount = 0;
+        int closeCount = 0;
+        for (int i = 0; i < cleaned.length(); i++) {
+            char c = cleaned.charAt(i);
+            if (c == '{') openCount++;
+            else if (c == '}') closeCount++;
+        }
+
+        if (closeCount > openCount) {
+            // 删除多余的尾部 '}'
+            while (closeCount > openCount && cleaned.endsWith("}")) {
+                cleaned = cleaned.substring(0, cleaned.length() - 1);
+                closeCount--;
+            }
+        } else if (openCount > closeCount) {
+            // 尾部补充缺失的 '}'
+            StringBuilder sb = new StringBuilder(cleaned);
+            while (openCount > closeCount) {
+                sb.append('}');
+                closeCount++;
+            }
+            cleaned = sb.toString();
+        }
+
         return cleaned;
     }
 

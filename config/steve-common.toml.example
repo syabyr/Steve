@@ -1,3 +1,19 @@
+[ai]
+    # AI provider to use: 'ollama' (LOCAL), 'openai', or 'gemini'
+    provider = "ollama"
+
+[ollama]
+    # Ollama server URL
+    # - 本机:       http://localhost:11434
+    # - 远程示例:   http://202.1.1.121:11434
+    #   确保该机器上 Ollama 正在运行: `ollama serve`
+    baseUrl = "http://202.1.1.121:11434"
+    
+    # Ollama model to use
+    # Popular models: llama3.2, mistral, qwen2.5, deepseek-r1
+    # Install with: ollama pull llama3.2
+    model = "llama3.2"
+
 [openai]
     # Your OpenAI API key
     # Get your API key from: https://platform.openai.com/api-keys

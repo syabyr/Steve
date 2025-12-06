@@ -11,12 +11,12 @@ import java.util.List;
 public class TaskPlanner {
     private final OpenAIClient openAIClient;
     private final GeminiClient geminiClient;
-    private final GroqClient groqClient;
+    private final OllamaClient ollamaClient;
 
     public TaskPlanner() {
         this.openAIClient = new OpenAIClient();
         this.geminiClient = new GeminiClient();
-        this.groqClient = new GroqClient();
+        this.ollamaClient = new OllamaClient();
     }
 
     public ResponseParser.ParsedResponse planTasks(SteveEntity steve, String command) {
@@ -52,20 +52,19 @@ public class TaskPlanner {
 
     private String getAIResponse(String provider, String systemPrompt, String userPrompt) {
         String response = switch (provider) {
-            case "groq" -> groqClient.sendRequest(systemPrompt, userPrompt);
+            case "ollama" -> ollamaClient.sendRequest(systemPrompt, userPrompt);
             case "gemini" -> geminiClient.sendRequest(systemPrompt, userPrompt);
             case "openai" -> openAIClient.sendRequest(systemPrompt, userPrompt);
             default -> {
-                SteveMod.LOGGER.warn("Unknown AI provider '{}', using Groq", provider);
-                yield groqClient.sendRequest(systemPrompt, userPrompt);
+                SteveMod.LOGGER.warn("Unknown AI provider '{}', using Ollama", provider);
+                yield ollamaClient.sendRequest(systemPrompt, userPrompt);
             }
         };
-        
-        if (response == null && !provider.equals("groq")) {
-            SteveMod.LOGGER.warn("{} failed, trying Groq as fallback", provider);
-            response = groqClient.sendRequest(systemPrompt, userPrompt);
+
+        if (response == null) {
+            SteveMod.LOGGER.warn("Provider {} failed and no fallback is configured", provider);
         }
-        
+
         return response;
     }
 
